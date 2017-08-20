@@ -5,10 +5,12 @@ import {RouterModule, Routes} from '@angular/router';
 import {AppComponent} from './app.component';
 import {TopComponent} from './top/top.component';
 import {UserComponent} from './user/user.component';
+import { CallbackComponent } from './callback/callback.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'top', pathMatch: 'full'},
   {path: 'top', component: TopComponent},
+  {path: 'callback', component: CallbackComponent},
   {path: 'user', component: UserComponent},
 ];
 
@@ -16,11 +18,12 @@ const routes: Routes = [
   declarations: [
     AppComponent,
     TopComponent,
-    UserComponent
+    UserComponent,
+    CallbackComponent
   ],
   imports: [
     BrowserModule,
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(routes),
   ],
   providers: [],
   bootstrap: [AppComponent]

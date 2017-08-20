@@ -41,3 +41,6 @@ yarn-error.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# local secret File
+src/environments/environment.local.ts
