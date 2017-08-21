@@ -1,14 +1,23 @@
-# Angular
+# go-backend-token-auth-middleware frontend app sample implemented by Angular
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.3.0.
+## Description
+
+* TODO
+
+## Setup
+
+* set oauth client id to environment.local.ts
+
+```
+export const environment = {
+  production: false,
+  CLIENT_ID: 'CLIENT_ID',
+};
+```
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+`ng serve --env=local`
 
 ## Build
 
