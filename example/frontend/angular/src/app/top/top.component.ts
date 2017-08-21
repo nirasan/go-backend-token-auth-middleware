@@ -1,7 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {environment} from '../../environments/environment';
+import {HttpClient} from '@angular/common/http';
 
+const backendAuthStartUrl = 'http://localhost:8080/auth/start';
 const oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
+
+interface AuthStartResponse {
+  codeChallenge: string
+}
 
 @Component({
   selector: 'app-top',
@@ -10,11 +16,16 @@ const oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
 })
 export class TopComponent implements OnInit {
 
+  private codeChallenge: string;
 
-  constructor() { }
-
+  constructor(private http: HttpClient) {
+  }
 
   ngOnInit() {
+    this.http.get<AuthStartResponse>(backendAuthStartUrl).subscribe(
+      data => this.codeChallenge = data.codeChallenge,
+      error => console.log(error)
+    );
   }
 
   login() {
@@ -29,6 +40,8 @@ export class TopComponent implements OnInit {
       'redirect_uri': 'http://localhost:4200/callback',
       'response_type': 'code',
       'scope': 'profile openid',
+      'code_challenge': this.codeChallenge,
+      'code_challenge_method': 'S256',
     };
 
     // Add form parameters as hidden input values.

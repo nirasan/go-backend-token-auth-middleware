@@ -6,6 +6,7 @@ import {AppComponent} from './app.component';
 import {TopComponent} from './top/top.component';
 import {UserComponent} from './user/user.component';
 import { CallbackComponent } from './callback/callback.component';
+import {HttpClientModule} from '@angular/common/http';
 
 const routes: Routes = [
   {path: '', redirectTo: 'top', pathMatch: 'full'},
@@ -24,6 +25,7 @@ const routes: Routes = [
   imports: [
     BrowserModule,
     RouterModule.forRoot(routes),
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
