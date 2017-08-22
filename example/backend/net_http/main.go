@@ -9,10 +9,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"net/http/httputil"
 )
 
 func main() {
 	http.HandleFunc("/auth/start", handlerAuthStart)
+	http.HandleFunc("/auth", handlerAuth)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
@@ -21,6 +23,7 @@ var codeVerifierMap map[string]*codeverifier.CodeVerifier = make(map[string]*cod
 
 func handlerAuthStart(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	cv, e := codeverifier.CreateCodeVerifier()
 	if e != nil {
@@ -40,6 +43,8 @@ func handlerAuthStart(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlerAuth(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	/**
 	 * get params
@@ -50,7 +55,7 @@ func handlerAuth(w http.ResponseWriter, r *http.Request) {
 	}{}
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		fmt.Printf("decode error: %v", err)
+		fmt.Printf("decode error 1: \n%v, \n%+v, \nbody: %+v", err, r, r.Body)
 		http.Error(w, err.Error(), 400)
 		return
 	}
@@ -61,7 +66,7 @@ func handlerAuth(w http.ResponseWriter, r *http.Request) {
 	cv, ok := codeVerifierMap[req.CodeChallenge]
 	if !ok {
 		fmt.Printf("code_verifier not found: %v", req)
-		http.Error(w, err.Error(), 400)
+		http.Error(w, "code verifier not found", 400)
 		return
 	}
 
@@ -75,50 +80,69 @@ func handlerAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	v := url.Values{}
+	v.Add("code", req.Code)
 	v.Add("client_id", os.Getenv("CLIENT_ID"))
 	v.Add("client_secret", os.Getenv("CLIENT_SECRET"))
-	v.Add("redirect_uri", "http://localhost:8080/callback")
+	v.Add("redirect_uri", "http://localhost:4200/callback")
 	v.Add("grant_type", "authorization_code")
 	//v.Add("access_type", "offline")
 	v.Add("code_verifier", cv.Value)
 
-	resp, err := http.PostForm("https://www.googleapis.com/oauth2/v4/token", v)
+	resp1, err := http.PostForm("https://www.googleapis.com/oauth2/v4/token", v)
 	if err != nil {
 		fmt.Printf("get token error: %v", err)
 		http.Error(w, err.Error(), 400)
 		return
 	}
+	defer resp1.Body.Close()
+
+	dump1, err := httputil.DumpResponse(resp1, true)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%q\n\n", dump1)
 
 	body := struct {
 		AccessToken string `json:"access_token"`
 	}{}
-	err = json.NewDecoder(resp.Body).Decode(&body)
+	err = json.NewDecoder(resp1.Body).Decode(&body)
 	if err != nil {
-		fmt.Printf("decode error: %v", err)
+		fmt.Printf("decode error 2: %v", err)
 		http.Error(w, err.Error(), 400)
 		return
 	}
+	fmt.Printf("%q\n\n", body)
 
 	/**
 	 * get user info
 	 */
 	v = url.Values{}
 	v.Add("access_token", body.AccessToken)
-	resp, err = http.Get("https://www.googleapis.com/oauth2/v3/userinfo" + "?" + v.Encode())
+	resp2, err := http.Get("https://www.googleapis.com/oauth2/v3/userinfo" + "?" + v.Encode())
 	if err != nil {
 		fmt.Printf("get userinfo error: %v", err)
 		http.Error(w, err.Error(), 400)
 		return
 	}
+	defer resp2.Body.Close()
+
+	dump2, err := httputil.DumpResponse(resp2, true)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%q\n\n", dump2)
+
 	body2 := struct {
 		Sub string `json:"sub"`
+		Name string `json:"name"`
 	}{}
-	err = json.NewDecoder(resp.Body).Decode(&body2)
+	err = json.NewDecoder(resp2.Body).Decode(&body2)
 	if err != nil {
 		fmt.Printf("decode error: %v", err)
 		http.Error(w, err.Error(), 400)
 		return
 	}
+	fmt.Printf("userinfo: %+v", body2)
 
 	//TODO サーバー発行のトークンを返す
 	res := struct {
