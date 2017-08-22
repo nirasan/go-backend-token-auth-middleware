@@ -16,15 +16,12 @@ export class CallbackComponent implements OnInit {
   ngOnInit() {
     let code = this.route.snapshot.queryParams['code']
 
-    let header = new HttpHeaders();
-    header.set('Content-Type', 'application/json;');
-
     let body = JSON.stringify({
       code: code,
       code_challenge: this.auth.getCodeChallenge(),
     });
 
-    this.http.post('http://localhost:8080/auth', body, {headers: header}).subscribe(
+    this.http.post('http://localhost:8080/auth', body).subscribe(
       (data) => {
         console.log(data);
       },
