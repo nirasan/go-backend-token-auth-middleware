@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {AuthService} from '../auth.service';
+import {ActivatedRoute} from '@angular/router';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 @Component({
   selector: 'app-callback',
@@ -7,9 +10,27 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CallbackComponent implements OnInit {
 
-  constructor() { }
-
-  ngOnInit() {
+  constructor(private route: ActivatedRoute, private auth: AuthService, private http: HttpClient) {
   }
 
+  ngOnInit() {
+    let code = this.route.snapshot.queryParams['code']
+
+    let header = new HttpHeaders();
+    header.set('Content-Type', 'application/json;');
+
+    let body = JSON.stringify({
+      code: code,
+      code_challenge: this.auth.getCodeChallenge(),
+    });
+
+    this.http.post('http://localhost:8080/auth', body, {headers: header}).subscribe(
+      (data) => {
+        console.log(data);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
 }

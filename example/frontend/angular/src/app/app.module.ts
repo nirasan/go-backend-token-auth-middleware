@@ -1,12 +1,14 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
+import {HttpClientModule} from '@angular/common/http';
+
+import {AuthService} from './auth.service';
 
 import {AppComponent} from './app.component';
 import {TopComponent} from './top/top.component';
 import {UserComponent} from './user/user.component';
-import { CallbackComponent } from './callback/callback.component';
-import {HttpClientModule} from '@angular/common/http';
+import {CallbackComponent} from './callback/callback.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'top', pathMatch: 'full'},
@@ -27,7 +29,9 @@ const routes: Routes = [
     RouterModule.forRoot(routes),
     HttpClientModule,
   ],
-  providers: [],
+  providers: [
+    AuthService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
