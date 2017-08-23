@@ -10,6 +10,9 @@ import (
 	"net/url"
 	"os"
 	"net/http/httputil"
+	"github.com/nirasan/go-backend-token-auth-middleware/token"
+	"io/ioutil"
+	"github.com/dgrijalva/jwt-go"
 )
 
 func main() {
@@ -18,7 +21,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-//TODO データベースなどに記録する
+//TODO use any data store
 var codeVerifierMap map[string]*codeverifier.CodeVerifier = make(map[string]*codeverifier.CodeVerifier)
 
 func handlerAuthStart(w http.ResponseWriter, r *http.Request) {
@@ -40,6 +43,14 @@ func handlerAuthStart(w http.ResponseWriter, r *http.Request) {
 		CodeChallenge: cc,
 	}
 	json.NewEncoder(w).Encode(&res)
+}
+
+//TODO use any data store
+var userMap map[string]*User = make(map[string]*User)
+
+type User struct {
+	ID string
+	Name string
 }
 
 func handlerAuth(w http.ResponseWriter, r *http.Request) {
@@ -144,11 +155,65 @@ func handlerAuth(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Printf("userinfo: %+v", body2)
 
-	//TODO サーバー発行のトークンを返す
+	/**
+	 * check user existence
+	 */
+	isNew := false
+	u, ok := userMap[body2.Sub]
+	if !ok {
+		isNew = true
+		u = &User{ID: body2.Sub, Name: body2.Name}
+		userMap[u.ID] = u
+	}
+
+	/**
+	 * create token
+	 */
+	m, err := token.CreateTokenManager(token.CreateTokenManagerOption{
+		SigningAlgorithm: "ES256",
+		PrivateKeyLoader: func() interface{} {
+			keyData, e := ioutil.ReadFile("./ec256-private.pem")
+			if e != nil {
+				panic(e.Error())
+			}
+			key, e := jwt.ParseECPrivateKeyFromPEM(keyData)
+			if e != nil {
+				panic(e.Error())
+			}
+			return key
+		},
+		PublicKeyLoader: func() interface{} {
+			keyData, e := ioutil.ReadFile("./ec256-public.pem")
+			if e != nil {
+				panic(e.Error())
+			}
+			key, e := jwt.ParseECPrivateKeyFromPEM(keyData)
+			if e != nil {
+				panic(e.Error())
+			}
+			return key
+		},
+	})
+	if err != nil {
+		fmt.Printf("create token manager error: %v", err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	token, err := m.CreateSignedToken(m.CreateToken(u.ID))
+	if err != nil {
+		fmt.Printf("create token manager error: %v", err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
 	res := struct {
-		Success bool `json:"success"`
+		Name string `json:"name"`
+		AccessToken string `json:"access_token"`
+		IsNew bool `json:"is_new"`
 	}{
-		Success: true,
+		Name: u.Name,
+		AccessToken: token,
+		IsNew: isNew,
 	}
 	json.NewEncoder(w).Encode(&res)
 }
