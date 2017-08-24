@@ -18,6 +18,7 @@ import (
 func main() {
 	http.HandleFunc("/auth/start", handlerAuthStart)
 	http.HandleFunc("/auth", handlerAuth)
+	http.HandleFunc("/userinfo", handlerUserinfo)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
@@ -96,7 +97,6 @@ func handlerAuth(w http.ResponseWriter, r *http.Request) {
 	v.Add("client_secret", os.Getenv("CLIENT_SECRET"))
 	v.Add("redirect_uri", "http://localhost:4200/callback")
 	v.Add("grant_type", "authorization_code")
-	//v.Add("access_type", "offline")
 	v.Add("code_verifier", cv.Value)
 
 	resp1, err := http.PostForm("https://www.googleapis.com/oauth2/v4/token", v)
@@ -107,11 +107,7 @@ func handlerAuth(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp1.Body.Close()
 
-	dump1, err := httputil.DumpResponse(resp1, true)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("%q\n\n", dump1)
+	dumpResponse(resp1)
 
 	body := struct {
 		AccessToken string `json:"access_token"`
@@ -137,11 +133,7 @@ func handlerAuth(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp2.Body.Close()
 
-	dump2, err := httputil.DumpResponse(resp2, true)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("%q\n\n", dump2)
+	dumpResponse(resp2)
 
 	body2 := struct {
 		Sub string `json:"sub"`
@@ -169,7 +161,77 @@ func handlerAuth(w http.ResponseWriter, r *http.Request) {
 	/**
 	 * create token
 	 */
-	m, err := token.CreateTokenManager(token.CreateTokenManagerOption{
+	m, err := createTokenManager()
+	if err != nil {
+		fmt.Printf("create token manager error: %v", err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	token, err := m.CreateSignedToken(m.CreateToken(u.ID))
+	if err != nil {
+		fmt.Printf("create token manager error: %v", err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	res := struct {
+		Name string `json:"name"`
+		AccessToken string `json:"access_token"`
+		IsNew bool `json:"is_new"`
+	}{
+		Name: u.Name,
+		AccessToken: token,
+		IsNew: isNew,
+	}
+	json.NewEncoder(w).Encode(&res)
+}
+
+func handlerUserinfo(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	m, err := createTokenManager()
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	t, err := m.ParseTokenFromRequest(r)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	if claims, ok := t.Claims.(jwt.MapClaims); !ok || !t.Valid {
+		http.Error(w, "invalid token", 403)
+		return
+	} else if id, ok := claims["sub"].(string); !ok {
+		http.Error(w, "invalid token", 403)
+		return
+	} else if u, ok := userMap[id]; !ok {
+		http.Error(w, "user not found", 403)
+		return
+	} else {
+		// success
+		res := struct {
+			Name string `json:"name"`
+		}{
+			Name: u.Name,
+		}
+		json.NewEncoder(w).Encode(&res)
+	}
+}
+
+func dumpResponse(r *http.Response) {
+	dump2, err := httputil.DumpResponse(r, true)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%q\n\n", dump2)
+}
+
+func createTokenManager() (*token.TokenManager, error) {
+	return token.CreateTokenManager(token.CreateTokenManagerOption{
 		SigningAlgorithm: "ES256",
 		PrivateKeyLoader: func() interface{} {
 			keyData, e := ioutil.ReadFile("./ec256-private.pem")
@@ -194,26 +256,4 @@ func handlerAuth(w http.ResponseWriter, r *http.Request) {
 			return key
 		},
 	})
-	if err != nil {
-		fmt.Printf("create token manager error: %v", err)
-		http.Error(w, err.Error(), 400)
-		return
-	}
-	token, err := m.CreateSignedToken(m.CreateToken(u.ID))
-	if err != nil {
-		fmt.Printf("create token manager error: %v", err)
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
-	res := struct {
-		Name string `json:"name"`
-		AccessToken string `json:"access_token"`
-		IsNew bool `json:"is_new"`
-	}{
-		Name: u.Name,
-		AccessToken: token,
-		IsNew: isNew,
-	}
-	json.NewEncoder(w).Encode(&res)
 }
