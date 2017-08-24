@@ -1,0 +1,67 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "IkAYIhxmvTQKEJvclIZJoVh9ats=",
+			"path": "github.com/dgrijalva/jwt-go",
+			"revision": "a539ee1a749a2b895533f979515ac7e6e0f5b650",
+			"revisionTime": "2017-06-08T00:51:49Z"
+		},
+		{
+			"checksumSHA1": "LslpZwP8HemFrj4JNJCAekwzl48=",
+			"path": "github.com/joho/godotenv",
+			"revision": "c9360df4d16dc0e391ea2f28da2d31a9ede2e26f",
+			"revisionTime": "2017-08-22T04:21:26Z"
+		},
+		{
+			"checksumSHA1": "Yz8nRvgJR9qN9OORCUQKc4eHC7Q=",
+			"path": "github.com/labstack/gommon/color",
+			"revision": "779b8a8b9850a97acba6a3fe20feb628c39e17c1",
+			"revisionTime": "2017-07-12T19:11:37Z"
+		},
+		{
+			"checksumSHA1": "TSGKEmOygv2KxrVtyOsesmGsPxc=",
+			"path": "github.com/labstack/gommon/log",
+			"revision": "779b8a8b9850a97acba6a3fe20feb628c39e17c1",
+			"revisionTime": "2017-07-12T19:11:37Z"
+		},
+		{
+			"checksumSHA1": "oxAL6OQU/oXQYUKECdVt+kbzej8=",
+			"path": "github.com/mattn/go-colorable",
+			"revision": "ad5389df28cdac544c99bd7b9161a0b5b6ca9d1b",
+			"revisionTime": "2017-08-16T03:18:13Z"
+		},
+		{
+			"checksumSHA1": "rCNfFpeYqd2Tpi5qOFX8ckaQcMU=",
+			"path": "github.com/mattn/go-isatty",
+			"revision": "fc9e8d8ef48496124e79ae0df75490096eccf6fe",
+			"revisionTime": "2017-03-22T23:44:13Z"
+		},
+		{
+			"checksumSHA1": "Bec2VvPA4Uu0spYJelwYjEtjt/k=",
+			"path": "github.com/nirasan/go-oauth-pkce-code-verifier",
+			"revision": "0fbfe93532da30084796fc50524263c23e6d615f",
+			"revisionTime": "2017-08-19T23:27:15Z"
+		},
+		{
+			"checksumSHA1": "x6+Vi9WumwYUrK8ZUmkGLDgOLtc=",
+			"path": "github.com/valyala/bytebufferpool",
+			"revision": "e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7",
+			"revisionTime": "2016-08-17T18:16:52Z"
+		},
+		{
+			"checksumSHA1": "UHztphFBVZKyLNbrMDVPM0VdJ60=",
+			"path": "github.com/valyala/fasttemplate",
+			"revision": "dcecefd839c4193db0d35b88ec65b4c12d360ab0",
+			"revisionTime": "2017-02-24T21:24:29Z"
+		},
+		{
+			"checksumSHA1": "2N+zaafLJbM/BcU+j+/BER6Yiwk=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "07c182904dbd53199946ba614a412c61d3c548f5",
+			"revisionTime": "2017-08-16T12:26:40Z"
+		}
+	],
+	"rootPath": "github.com/nirasan/go-backend-token-auth-middleware"
+}
