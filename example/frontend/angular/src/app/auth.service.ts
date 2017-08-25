@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 const CODE_CHALLENGE_KEY = 'code_challenge';
 const ACCESS_TOKEN_KEY = 'access_token';
@@ -6,7 +6,8 @@ const ACCESS_TOKEN_KEY = 'access_token';
 @Injectable()
 export class AuthService {
 
-  constructor() { }
+  constructor() {
+  }
 
   setCodeChallenge(codeChallenge: string) {
     localStorage.setItem(CODE_CHALLENGE_KEY, codeChallenge);
@@ -22,5 +23,14 @@ export class AuthService {
 
   getAccessToken(): string {
     return localStorage.getItem(ACCESS_TOKEN_KEY);
+  }
+
+  isAuthenticated(): boolean {
+    return this.getAccessToken() != null
+  }
+
+  logout() {
+    localStorage.removeItem(CODE_CHALLENGE_KEY);
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
   }
 }

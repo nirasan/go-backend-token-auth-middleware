@@ -190,6 +190,8 @@ func handlerUserinfo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
+	fmt.Printf("%+v\n", r)
+
 	m, err := createTokenManager()
 	if err != nil {
 		http.Error(w, err.Error(), 400)

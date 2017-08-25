@@ -2,4 +2,5 @@
   top works!
 </p>
 
-<button (click)="login()">login</button>
+<button (click)="login()" *ngIf="!isAuthenticated">login</button>
+<button (click)="logout()" *ngIf="isAuthenticated">logout</button>

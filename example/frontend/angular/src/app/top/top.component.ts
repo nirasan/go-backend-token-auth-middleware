@@ -17,6 +17,8 @@ interface AuthStartResponse {
 })
 export class TopComponent implements OnInit {
 
+  isAuthenticated = false;
+
   constructor(private http: HttpClient, private auth: AuthService) {
   }
 
@@ -29,27 +31,31 @@ export class TopComponent implements OnInit {
         console.log(error);
       }
     );
+    this.isAuthenticated = this.auth.isAuthenticated();
   }
 
   login() {
     // Create <form> element to submit parameters to OAuth 2.0 endpoint.
-    var form = document.createElement('form');
+    const form = document.createElement('form');
     form.setAttribute('method', 'GET'); // Send as a GET request.
     form.setAttribute('action', oauth2Endpoint);
 
     // Parameters to pass to OAuth 2.0 endpoint.
-    var params = {
+    const params = {
       'client_id': environment['CLIENT_ID'],
       'redirect_uri': 'http://localhost:4200/callback',
       'response_type': 'code',
       'scope': 'profile openid',
       'code_challenge': this.auth.getCodeChallenge(),
-      'code_challenge_method': 'S256',
+      'code_challenge_method': 'S256'
     };
 
     // Add form parameters as hidden input values.
-    for (var p in params) {
-      var input = document.createElement('input');
+    for (const p in params) {
+      if (!params.hasOwnProperty(p)) {
+        continue;
+      }
+      const input = document.createElement('input');
       input.setAttribute('type', 'hidden');
       input.setAttribute('name', p);
       input.setAttribute('value', params[p]);
@@ -61,4 +67,7 @@ export class TopComponent implements OnInit {
     form.submit();
   }
 
+  logout() {
+    this.auth.logout();
+  }
 }

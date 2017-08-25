@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {AuthService} from '../auth.service';
 
 @Component({
   selector: 'app-user',
@@ -7,9 +9,22 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UserComponent implements OnInit {
 
-  constructor() { }
+  name = '';
 
-  ngOnInit() {
+  constructor(private http: HttpClient,
+              private auth: AuthService) {
   }
 
+  ngOnInit() {
+    this.http.get('http://localhost:8080/userinfo').subscribe(
+      data => {
+        this.name = data['name'];
+        console.log(data);
+      },
+      error => {
+        console.log(error);
+      }
+    )
+    ;
+  }
 }
