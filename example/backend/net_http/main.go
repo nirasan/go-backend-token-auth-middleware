@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
-	codeverifier "github.com/nirasan/go-oauth-pkce-code-verifier"
 	"net/http"
 	"net/url"
 	"os"
@@ -13,30 +12,33 @@ import (
 	"github.com/nirasan/go-backend-token-auth-middleware/token"
 	"io/ioutil"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/nirasan/go-backend-token-auth-middleware/middleware"
+)
+
+const (
+	CodeChallengeContextKey = "CodeChallenge"
 )
 
 func main() {
-	http.HandleFunc("/auth/start", handlerAuthStart)
+	prepareAuthenticationMiddleware := middleware.PrepareAuthenticationMiddleware(middleware.PrepareAuthenticationMiddlewareOption{
+		Next: handlerAuthStart,
+		CodeVerifierSetter: func(cv, cc string) { codeVerifierMap[cc] = cv },
+		CodeChallengeContextKey: CodeChallengeContextKey,
+	})
+	http.HandleFunc("/auth/start", prepareAuthenticationMiddleware)
 	http.HandleFunc("/auth", handlerAuth)
 	http.HandleFunc("/userinfo", handlerUserinfo)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 //TODO use any data store
-var codeVerifierMap map[string]*codeverifier.CodeVerifier = make(map[string]*codeverifier.CodeVerifier)
+var codeVerifierMap map[string]string = make(map[string]string)
 
 func handlerAuthStart(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	cv, e := codeverifier.CreateCodeVerifier()
-	if e != nil {
-		panic(e)
-		return
-	}
-
-	cc := cv.CodeChallengeS256()
-	codeVerifierMap[cc] = cv
+	cc := r.Context().Value(CodeChallengeContextKey).(string)
 
 	res := struct {
 		CodeChallenge string `json:"code_challenge"`
@@ -77,7 +79,7 @@ func handlerAuth(w http.ResponseWriter, r *http.Request) {
 	 */
 	cv, ok := codeVerifierMap[req.CodeChallenge]
 	if !ok {
-		fmt.Printf("code_verifier not found: %v", req)
+		fmt.Printf("code_verifier not found: %+v, %+v", req, codeVerifierMap)
 		http.Error(w, "code verifier not found", 400)
 		return
 	}
@@ -97,7 +99,7 @@ func handlerAuth(w http.ResponseWriter, r *http.Request) {
 	v.Add("client_secret", os.Getenv("CLIENT_SECRET"))
 	v.Add("redirect_uri", "http://localhost:4200/callback")
 	v.Add("grant_type", "authorization_code")
-	v.Add("code_verifier", cv.Value)
+	v.Add("code_verifier", cv)
 
 	resp1, err := http.PostForm("https://www.googleapis.com/oauth2/v4/token", v)
 	if err != nil {
