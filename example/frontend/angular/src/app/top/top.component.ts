@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {AuthService} from '../auth.service';
@@ -17,7 +17,7 @@ interface AuthStartResponse {
 })
 export class TopComponent implements OnInit {
 
-  isAuthenticated = false;
+  @Input() isAuthenticated = false;
 
   constructor(private http: HttpClient, private auth: AuthService) {
   }
@@ -69,5 +69,6 @@ export class TopComponent implements OnInit {
 
   logout() {
     this.auth.logout();
+    this.isAuthenticated = this.auth.isAuthenticated();
   }
 }

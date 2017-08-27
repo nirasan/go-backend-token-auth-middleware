@@ -11,6 +11,7 @@ import {UserComponent} from './user/user.component';
 import {CallbackComponent} from './callback/callback.component';
 import {AuthGuard} from './auth.guard';
 import {AddHeaderInterceptor} from './add-header.interceptor';
+import {HttpModule} from '@angular/http';
 
 const routes: Routes = [
   {path: '', redirectTo: 'top', pathMatch: 'full'},
@@ -29,16 +30,17 @@ const routes: Routes = [
   imports: [
     BrowserModule,
     RouterModule.forRoot(routes),
+    HttpModule,
     HttpClientModule
   ],
   providers: [
     AuthService,
     AuthGuard,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AddHeaderInterceptor,
-      multi: true
-    }
+    // {
+    //   provide: HTTP_INTERCEPTORS,
+    //   useClass: AddHeaderInterceptor,
+    //   multi: true
+    // }
   ],
   bootstrap: [AppComponent]
 })

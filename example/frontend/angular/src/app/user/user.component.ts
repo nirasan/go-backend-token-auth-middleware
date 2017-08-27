@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {AuthService} from '../auth.service';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 @Component({
   selector: 'app-user',
@@ -16,7 +16,9 @@ export class UserComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.http.get('http://localhost:8080/userinfo').subscribe(
+    this.http.get('http://localhost:8080/userinfo', {
+      headers: new HttpHeaders().set('Authorization', 'Bearer ' + this.auth.getAccessToken())
+    }).subscribe(
       data => {
         this.name = data['name'];
         console.log(data);
@@ -24,7 +26,6 @@ export class UserComponent implements OnInit {
       error => {
         console.log(error);
       }
-    )
-    ;
+    );
   }
 }
