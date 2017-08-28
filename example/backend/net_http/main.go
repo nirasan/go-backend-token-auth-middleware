@@ -3,17 +3,17 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
+	"github.com/nirasan/go-backend-token-auth-middleware/middleware"
+	"github.com/nirasan/go-backend-token-auth-middleware/token"
+	"github.com/rs/cors"
+	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"os"
-	"net/http/httputil"
-	"github.com/nirasan/go-backend-token-auth-middleware/token"
-	"io/ioutil"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/nirasan/go-backend-token-auth-middleware/middleware"
-	"github.com/rs/cors"
 )
 
 const (
@@ -22,8 +22,8 @@ const (
 
 func main() {
 	prepareAuthenticationMiddleware := middleware.PrepareAuthenticationMiddleware(middleware.PrepareAuthenticationMiddlewareOption{
-		Next: handlerAuthStart,
-		CodeVerifierSetter: func(cv, cc string) { codeVerifierMap[cc] = cv },
+		Next:                    handlerAuthStart,
+		CodeVerifierSetter:      func(cv, cc string) { codeVerifierMap[cc] = cv },
 		CodeChallengeContextKey: CodeChallengeContextKey,
 	})
 	http.HandleFunc("/auth/start", prepareAuthenticationMiddleware)
@@ -31,9 +31,9 @@ func main() {
 	http.HandleFunc("/userinfo", handlerUserinfo)
 
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:4200"},
+		AllowedOrigins:   []string{"http://localhost:4200"},
 		AllowCredentials: true,
-		AllowedHeaders: []string{"Authorization"},
+		AllowedHeaders:   []string{"Authorization"},
 	})
 
 	log.Fatal(http.ListenAndServe(":8080", c.Handler(http.DefaultServeMux)))
@@ -60,7 +60,7 @@ func handlerAuthStart(w http.ResponseWriter, r *http.Request) {
 var userMap map[string]*User = make(map[string]*User)
 
 type User struct {
-	ID string
+	ID   string
 	Name string
 }
 
@@ -146,7 +146,7 @@ func handlerAuth(w http.ResponseWriter, r *http.Request) {
 	dumpResponse(resp2)
 
 	body2 := struct {
-		Sub string `json:"sub"`
+		Sub  string `json:"sub"`
 		Name string `json:"name"`
 	}{}
 	err = json.NewDecoder(resp2.Body).Decode(&body2)
@@ -185,13 +185,13 @@ func handlerAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res := struct {
-		Name string `json:"name"`
+		Name        string `json:"name"`
 		AccessToken string `json:"access_token"`
-		IsNew bool `json:"is_new"`
+		IsNew       bool   `json:"is_new"`
 	}{
-		Name: u.Name,
+		Name:        u.Name,
 		AccessToken: token,
-		IsNew: isNew,
+		IsNew:       isNew,
 	}
 	json.NewEncoder(w).Encode(&res)
 }
