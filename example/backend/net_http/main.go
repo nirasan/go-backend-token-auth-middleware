@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/nirasan/go-backend-token-auth-middleware/middleware"
+	"github.com/rs/cors"
 )
 
 const (
@@ -28,7 +29,14 @@ func main() {
 	http.HandleFunc("/auth/start", prepareAuthenticationMiddleware)
 	http.HandleFunc("/auth", handlerAuth)
 	http.HandleFunc("/userinfo", handlerUserinfo)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:4200"},
+		AllowCredentials: true,
+		AllowedHeaders: []string{"Authorization"},
+	})
+
+	log.Fatal(http.ListenAndServe(":8080", c.Handler(http.DefaultServeMux)))
 }
 
 //TODO use any data store
@@ -190,7 +198,6 @@ func handlerAuth(w http.ResponseWriter, r *http.Request) {
 
 func handlerUserinfo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	fmt.Printf("%+v\n", r)
 
@@ -253,7 +260,7 @@ func createTokenManager() (*token.TokenManager, error) {
 			if e != nil {
 				panic(e.Error())
 			}
-			key, e := jwt.ParseECPrivateKeyFromPEM(keyData)
+			key, e := jwt.ParseECPublicKeyFromPEM(keyData)
 			if e != nil {
 				panic(e.Error())
 			}
