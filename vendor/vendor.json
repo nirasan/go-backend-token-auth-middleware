@@ -3,64 +3,75 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "IkAYIhxmvTQKEJvclIZJoVh9ats=",
+			"path": "context",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "GXOurDGgsLmJs0wounpdWZZRSGw=",
 			"path": "github.com/dgrijalva/jwt-go",
 			"revision": "a539ee1a749a2b895533f979515ac7e6e0f5b650",
 			"revisionTime": "2017-06-08T00:51:49Z"
 		},
 		{
-			"checksumSHA1": "LslpZwP8HemFrj4JNJCAekwzl48=",
+			"checksumSHA1": "Zi5uRKslwVUdr2KUweC0F0h9q2A=",
 			"path": "github.com/joho/godotenv",
 			"revision": "c9360df4d16dc0e391ea2f28da2d31a9ede2e26f",
 			"revisionTime": "2017-08-22T04:21:26Z"
 		},
 		{
-			"checksumSHA1": "Yz8nRvgJR9qN9OORCUQKc4eHC7Q=",
+			"checksumSHA1": "R6DzcBLEP0BONPpsyr+11N7xh5w=",
 			"path": "github.com/labstack/gommon/color",
 			"revision": "779b8a8b9850a97acba6a3fe20feb628c39e17c1",
 			"revisionTime": "2017-07-12T19:11:37Z"
 		},
 		{
-			"checksumSHA1": "TSGKEmOygv2KxrVtyOsesmGsPxc=",
+			"checksumSHA1": "uHA6zbtxzJce4r+6uk8zu11qkuk=",
 			"path": "github.com/labstack/gommon/log",
 			"revision": "779b8a8b9850a97acba6a3fe20feb628c39e17c1",
 			"revisionTime": "2017-07-12T19:11:37Z"
 		},
 		{
-			"checksumSHA1": "oxAL6OQU/oXQYUKECdVt+kbzej8=",
+			"checksumSHA1": "cTDA66oZUy18cIzJsU1diKq+9CE=",
 			"path": "github.com/mattn/go-colorable",
 			"revision": "ad5389df28cdac544c99bd7b9161a0b5b6ca9d1b",
 			"revisionTime": "2017-08-16T03:18:13Z"
 		},
 		{
-			"checksumSHA1": "rCNfFpeYqd2Tpi5qOFX8ckaQcMU=",
+			"checksumSHA1": "U6lX43KDDlNOn+Z0Yyww+ZzHfFo=",
 			"path": "github.com/mattn/go-isatty",
 			"revision": "fc9e8d8ef48496124e79ae0df75490096eccf6fe",
 			"revisionTime": "2017-03-22T23:44:13Z"
 		},
 		{
-			"checksumSHA1": "Bec2VvPA4Uu0spYJelwYjEtjt/k=",
+			"checksumSHA1": "zUhm5eCEY3+Mlc+IzT0ch8ZPbbo=",
 			"path": "github.com/nirasan/go-oauth-pkce-code-verifier",
 			"revision": "0fbfe93532da30084796fc50524263c23e6d615f",
 			"revisionTime": "2017-08-19T23:27:15Z"
 		},
 		{
-			"checksumSHA1": "x6+Vi9WumwYUrK8ZUmkGLDgOLtc=",
+			"checksumSHA1": "I778b2sbNN/yjwKSdb3y7hz2yUQ=",
+			"path": "github.com/rs/cors",
+			"revision": "eabcc6af4bbe5ad3a949d36450326a2b0b9894b8",
+			"revisionTime": "2017-08-01T07:32:01Z"
+		},
+		{
+			"checksumSHA1": "LTOa3BADhwvT0wFCknPueQALm8I=",
+			"origin": "github.com/nirasan/go-backend-token-auth-middleware/vendor/github.com/valyala/bytebufferpool",
 			"path": "github.com/valyala/bytebufferpool",
 			"revision": "e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7",
 			"revisionTime": "2016-08-17T18:16:52Z"
 		},
 		{
-			"checksumSHA1": "UHztphFBVZKyLNbrMDVPM0VdJ60=",
+			"checksumSHA1": "gtG8jeB0fcTmKZf+6Vbcoa6nfec=",
 			"path": "github.com/valyala/fasttemplate",
 			"revision": "dcecefd839c4193db0d35b88ec65b4c12d360ab0",
 			"revisionTime": "2017-02-24T21:24:29Z"
 		},
 		{
-			"checksumSHA1": "2N+zaafLJbM/BcU+j+/BER6Yiwk=",
+			"checksumSHA1": "w70GrQt8nhjc6j0i3rEZjWuSpKY=",
 			"path": "golang.org/x/sys/unix",
-			"revision": "07c182904dbd53199946ba614a412c61d3c548f5",
-			"revisionTime": "2017-08-16T12:26:40Z"
+			"revision": "7ddbeae9ae08c6a06a59597f0c9edbc5ff2444ce",
+			"revisionTime": "2017-09-01T16:16:44Z"
 		}
 	],
 	"rootPath": "github.com/nirasan/go-backend-token-auth-middleware"
